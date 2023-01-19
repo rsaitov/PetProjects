@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>RSaitov.SoftwareDevelop.Domain</AssemblyName>
+    <RootNamespace>RSaitov.SoftwareDevelop.Domain</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Persistence\Data.csproj" />
+  </ItemGroup>
+
+</Project>

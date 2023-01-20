@@ -51,7 +51,7 @@ function setTime(value) {
 
 function finishGame() {
     timeEl.parentNode.classList.add('hide')
-    board.innerHTML =`<h1>Score: <span class="primary">${score}</span></h1>`
+    board.innerHTML = `<h1>Score: <span class="primary">${score}</span></h1>`
 }
 
 
@@ -59,7 +59,7 @@ function createRandomCircle() {
     const circle = document.createElement('div')
 
     const size = getRandomNumber(10, 60)
-    const { width, height} = board.getBoundingClientRect()
+    const { width, height } = board.getBoundingClientRect()
 
     const x = getRandomNumber(0, width - size)
     const y = getRandomNumber(0, height - size)
@@ -76,4 +76,16 @@ function createRandomCircle() {
 
 function getRandomNumber(min, max) {
     return Math.round(Math.random() * (max - min) + min)
+}
+
+function winTheGame() {
+    function kill() {
+        const circle = document.querySelector('.circle')
+
+        if (circle) {
+            circle.click()
+        }
+    }
+
+    setInterval(kill, 30)
 }

@@ -1,9 +1,13 @@
-Read tasks from file;0
-Store task to file;0
-Footer position;0
+Move DB to somewhere;0
+Store tasks to file;0
 Color picker;0
 Drag task;0
 Rename list;0
 Rename task;0
 Move completed task to the end;0
+Remove task;0
+Footer position;1
+Very long task name Very long task name Very long task name Very long task name;1
+Read tasks from file;1
+Complete task;1
 Task status completed;1

@@ -1,4 +1,5 @@
 const dbFilePath = 'db.txt'
+const apiUrl = 'https://jsonplaceholder.typicode.com/todos'
 
 const listName = document.querySelector('.listname')
 const listNameEditIcon = document.querySelector('#listNameEditIcon')
@@ -24,49 +25,59 @@ listNameEditIcon.addEventListener('click', () => {
 addButton.addEventListener('click', () => {
     if (newTaskText.value.trim() === '')
         return
+    
+    const newTask = new Task(null, null, newTaskText.value.trim(), false)
 
-    generateTask(newTaskText.value.trim())
-    placeEventsOnCheckboxes();
-    placeEventsOnTaskTexts();
+    generateTask(newTask)
 
     newTaskText.value = ''
 })
 
-readTasksFromFile(dbFilePath);
+getData()
 
-function placeEventsOnCheckboxes() {
-    const checkboxes = document.querySelectorAll('.chk-input')
+function placeEventsOnCheckbox(chkInput) {
 
-    checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', (event) => {
-            const parent = checkbox.parentElement.parentElement
-            if (event.currentTarget.checked) {
-                parent.classList.add('completed')
-            } else {
-                parent.classList.remove('completed')
-            }
-        })
-    });
+    chkInput.addEventListener('change', (event) => {
+        const parent = chkInput.parentElement.parentElement
+        if (event.currentTarget.checked) {
+            parent.classList.add('completed')
+        } else {
+            parent.classList.remove('completed')
+        }
+    })
 }
 
-function placeEventsOnTaskTexts() {
-    const taskTexts = document.querySelectorAll('.task-text')
+function placeEventsOnTaskText(textInput) {
 
-    taskTexts.forEach(taskText => {
-        taskText.addEventListener('click', (event) => {
+    textInput.addEventListener('click', (event) => {
+        const parent = textInput.parentElement
 
-            const parent = taskText.parentElement
+        var chkInput = parent.querySelector('.chk-input')
+        chkInput.checked = !chkInput.checked;
+
+        if (chkInput.checked) {
             parent.classList.add('completed')
+        } else {
+            parent.classList.remove('completed')
+        }
+    })
+}
 
-            var chkInput = parent.querySelector('.chk-input')
-            chkInput.checked = !chkInput.checked;
+function getData() {
+    loadFromApi()
+    // readTasksFromFile(dbFilePath)
+}
 
-            if (event.currentTarget.checked) {
-            } else {
-                parent.classList.remove('completed')
-            }
+function loadFromApi() {
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(json => {
+            json.forEach(x => { 
+                const task = new Task(x.userId, x.id, x.title, x.completed)
+                arrTasks.push(task)
+                generateTask(task, false)
+            })
         })
-    });
 }
 
 function readTasksFromFile(file) {
@@ -77,18 +88,18 @@ function readTasksFromFile(file) {
             arrTasks = text.split('\r\n');
             arrTasks.forEach(x => {
                 const args = x.split(';')
-                generateTask(args[0], args[1], false)
+                if (args[0].trim() != 0) {
+                    generateTask(args[0], args[1], false)
+                }
             })
-
-            placeEventsOnCheckboxes();
-            placeEventsOnTaskTexts();
         })
 }
 
-function generateTask(text, completed, addToBegin = true) {
+function generateTask(task, addToBegin = true) {
+
     taskList.insertAdjacentHTML(
         addToBegin ? 'afterbegin' : 'beforeend',
-        `<div class="task${completed == 1 ? ' completed' : ''}">
+        `<div class="task${task.completed ? ' completed' : ''}">
         <div class="drag">
             <span class="material-icons md-20">drag_indicator</span>
         </div>
@@ -96,6 +107,25 @@ function generateTask(text, completed, addToBegin = true) {
         <div class="check">
             <input type="checkbox" class='chk-input'>
         </div>
-        <span class="task-text">${text}</span>
+        <span class="task-text">${task.title}</span>
     </div>`);
+
+    var checkboxNodes = taskList.querySelectorAll('.chk-input');
+    let newCheckbox = checkboxNodes[addToBegin ? 0 : checkboxNodes.length - 1];
+    newCheckbox.checked = task.completed == 1;
+
+    const textsNodes = document.querySelectorAll('.task-text')
+    let newText = textsNodes[addToBegin ? 0 : textsNodes.length - 1];
+
+    placeEventsOnCheckbox(newCheckbox);
+    placeEventsOnTaskText(newText);
+}
+
+class Task {
+    constructor(userId, id, title, completed) {
+        this.userId = userId;
+        this.id = id;
+        this.title = title;
+        this.completed = completed;
+    }
 }

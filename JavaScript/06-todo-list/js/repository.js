@@ -23,7 +23,7 @@ async function getUser(id) {
     var querySnapshot = await usersRef.where("__name__", "==", id).get()    
     return querySnapshot.docs
         .map(x => new User(
-            querySnapshot.docs[0].id,
+            x.id,
             x.data().login)
         )[0]
 }
@@ -36,7 +36,7 @@ async function getTaskList(id) {
     var querySnapshot = await taskListsRef.where("__name__", "==", id).get()
     return querySnapshot.docs
         .map(x => new TaskList(
-            querySnapshot.docs[0].id,
+            x.id,
             x.data().title,
             x.data().userId,
             x.data().creationTime,
@@ -52,7 +52,7 @@ async function getTasksOfTaskList(taskListId) {
     
     return querySnapshot.docs
         .map(x => new Task(
-            querySnapshot.docs[0].id,
+            x.id,
             x.data().title,
             x.data().completed,
             x.data().taskListId,
@@ -63,7 +63,7 @@ async function getTasksOfTaskList(taskListId) {
 }
 
 async function addTask(task) {
-    console.log(task);
+
     return await tasksRef.add({
         title: task.title,
         taskListId: task.taskListId,
@@ -71,6 +71,10 @@ async function addTask(task) {
         creationTime: new Date(),
         completionTime: null
       });
+}
+
+async function deleteTask(id) {
+    return await tasksRef.doc(id).delete()
 }
 
 // const usersDocuments  = await getUsers()

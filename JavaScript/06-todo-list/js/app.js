@@ -31,8 +31,10 @@ listNameEditIcon.addEventListener('click', () => {
 })
 
 addButton.addEventListener('click', async () => {
-    if (newTaskText.value.trim() === '')
+    
+    if (newTaskText.value.trim() === '') {
         return
+    }
 
     const newTask = new Task(null, newTaskText.value.trim(), false, currentTaskList.id)
     newTaskText.value = ''
@@ -75,59 +77,43 @@ function setLoadingView(isLoading) {
     listName.style.display = isLoading ? 'none' : 'flex'
 }
 
-function readTasksFromFile(file) {
-
-    fetch(file)
-        .then(response => response.text())
-        .then(text => {
-            arrTasks = text.split('\r\n');
-            arrTasks.forEach(x => {
-                const args = x.split(';')
-                if (args[0].trim() != 0) {
-                    generateTask(args[0], args[1], false)
-                }
-            })
-        })
-}
-
 function generateTask(task, addToBegin = true) {
 
     taskList.insertAdjacentHTML(
         addToBegin ? 'afterbegin' : 'beforeend',
         `<div class="task${task.completed ? ' completed' : ''}">
-        <div class="drag">
-            <span class="material-icons md-20">drag_indicator</span>
-        </div>
-        <div class="color"></div>
-        <div class="check">
-            <input type="checkbox" class='chk-input'>
-        </div>
-        <span class="task-text">${task.title}</span>
-        <div class="delete-forever"><span class="material-icons md-20">delete_forever</span></div>        
-    </div>`);
+            <input type="hidden" id="id" value="${task.id}">
+            <div class="drag">
+                <span class="material-icons md-20">drag_indicator</span>
+            </div>
+            <div class="color"></div>
+            <div class="check">
+                <input type="checkbox" class='chk-input'>
+            </div>
+            <span class="task-text">${task.title}</span>
+            <div class="delete-forever"><span class="material-icons md-20">delete_forever</span></div>        
+        </div>`);
 
     const taskNodes = taskList.querySelectorAll('.task');
+
     const newTask = taskNodes[addToBegin ? 0 : taskNodes.length - 1];
-
-    const checkboxNodes = taskList.querySelectorAll('.chk-input');
-    const newCheckbox = checkboxNodes[addToBegin ? 0 : checkboxNodes.length - 1];
-    newCheckbox.checked = task.completed == 1;
-
-    const textsNodes = document.querySelectorAll('.task-text')
-    const newText = textsNodes[addToBegin ? 0 : textsNodes.length - 1];
+    const newCheckbox = newTask.querySelector('.chk-input')
+    const newText = newTask.querySelector('.task-text')
+    const newDeleteForever = newTask.querySelector('.delete-forever')
 
     placeEventOnTaskBlock(newTask)
     placeEventOnCheckbox(newCheckbox)
     placeEventOnTaskText(newText)
+    placeEventOnDeleteForever(newDeleteForever, task.id)
 }
 
 function placeEventOnTaskBlock(task) {
 
-    task.addEventListener('mouseover', (event) => {
+    task.addEventListener('mouseover', () => {
         task.querySelector('.delete-forever').style.display = 'flex'
     })
 
-    task.addEventListener('mouseout', (event) => {
+    task.addEventListener('mouseout', () => {
         task.querySelector('.delete-forever').style.display = 'none'
     })
 }
@@ -135,6 +121,7 @@ function placeEventOnTaskBlock(task) {
 function placeEventOnCheckbox(chkInput) {
 
     chkInput.addEventListener('change', (event) => {
+
         const parent = chkInput.parentElement.parentElement
         if (event.currentTarget.checked) {
             parent.classList.add('completed')
@@ -146,9 +133,9 @@ function placeEventOnCheckbox(chkInput) {
 
 function placeEventOnTaskText(textInput) {
 
-    textInput.addEventListener('click', (event) => {
-        const parent = textInput.parentElement
+    textInput.addEventListener('click', () => {
 
+        const parent = textInput.parentElement
         var chkInput = parent.querySelector('.chk-input')
         chkInput.checked = !chkInput.checked;
 
@@ -157,5 +144,13 @@ function placeEventOnTaskText(textInput) {
         } else {
             parent.classList.remove('completed')
         }
+    })
+}
+
+function placeEventOnDeleteForever(input, taskId) {
+
+    input.addEventListener('click', async () => {
+        input.parentElement.remove()
+        await deleteTask(taskId)
     })
 }

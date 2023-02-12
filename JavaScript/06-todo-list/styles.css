@@ -34,12 +34,17 @@ footer {
     bottom: 20px; */
 }
 
+#loading {
+    text-align: center;
+    color: #555;
+}
+
 footer .social a {
     color: #888;
 }
 
 .listname {
-    display: flex;
+    display: none;
     height: 30px;
     color: #111;
     margin-left: 14px;
@@ -59,7 +64,12 @@ footer .social a {
     display: none;
 }
 
-.newtask,
+.newtask{
+    display: none;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
 .task {
     display: flex;
 }
@@ -85,6 +95,17 @@ footer .social a {
     cursor: pointer;
 }
 
+.task-text {
+    cursor: pointer;
+}
+
+.delete-forever {
+    display: none;
+    margin-left: auto;
+    cursor: pointer;
+    color: #ccc;
+}
+
 .material-icons {
     vertical-align: middle;
 }
@@ -97,7 +118,7 @@ footer .social a {
     font-size: 20px;
 }
 
-.completed {
+.completed .task-text {
     text-decoration: line-through;
     color: #aaa;
 }
@@ -121,9 +142,5 @@ footer .social a {
     margin-top: 5px;
     margin-right: 5px;
     background-color: red;
-    cursor: pointer;
-}
-
-.task-text {
     cursor: pointer;
 }

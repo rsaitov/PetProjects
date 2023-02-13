@@ -16,12 +16,21 @@ class TaskList {
 }
 
 class Task {
-    constructor(id, title, completed, taskListId, creationTime, completionTime) {
+    constructor(
+        id,
+        title,
+        completed,
+        taskListId,
+        creationTime,
+        completionTime,
+        // orderNumber,
+    ) {
         this.id = id
         this.title = title
         this.completed = completed
         this.taskListId = taskListId
         this.creationTime = creationTime
         this.completionTime = completionTime
+        // this.orderNumber = orderNumber
     }
 }

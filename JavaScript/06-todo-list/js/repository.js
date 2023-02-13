@@ -73,6 +73,15 @@ async function addTask(task) {
       });
 }
 
+async function updateTask(task) {
+
+    var taskRef = await tasksRef.doc(task.id)
+    await taskRef.update({
+        title: task.title,
+        completed: task.completed
+    })
+}
+
 async function deleteTask(id) {
     return await tasksRef.doc(id).delete()
 }

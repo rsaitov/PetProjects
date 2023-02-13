@@ -97,6 +97,8 @@ footer .social a {
 
 .task-text {
     cursor: pointer;
+    max-width: 440px;
+    word-wrap: break-word;
 }
 
 .delete-forever {
@@ -110,11 +112,15 @@ footer .social a {
     vertical-align: middle;
 }
 
-.material-icons.md-22 {
-    font-size: 20px;
+.material-icons.md-18 {
+    font-size: 18px;
 }
 
 .material-icons.md-20 {
+    font-size: 20px;
+}
+
+.material-icons.md-22 {
     font-size: 20px;
 }
 
@@ -134,6 +140,16 @@ footer .social a {
 
 .drag:hover {
     color: #000;
+}
+
+.task-edit {
+    margin-right: 2px;
+    color: #aaa;
+    cursor: pointer;
+}
+
+.task-name-edit {
+    display: none;
 }
 
 .color {

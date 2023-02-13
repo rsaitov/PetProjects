@@ -87,23 +87,43 @@ function generateTask(task, addToBegin = true) {
                 <span class="material-icons md-20">drag_indicator</span>
             </div>
             <div class="color"></div>
+            <div class="task-edit">
+                <span id="task-edit-icon" class="material-icons md-18">edit</span>
+            </div>
             <div class="check">
                 <input type="checkbox" class='chk-input'>
             </div>
+
+            <div class="task-name-edit">
+                <input class="task-name-edit-input" type="text">
+            </div>
+
             <span class="task-text">${task.title}</span>
-            <div class="delete-forever"><span class="material-icons md-20">delete_forever</span></div>        
+            
+            <div class="delete-forever">
+                <span class="material-icons md-20">delete_forever</span>
+            </div>        
         </div>`);
 
     const taskNodes = taskList.querySelectorAll('.task');
 
     const newTask = taskNodes[addToBegin ? 0 : taskNodes.length - 1];
     const newCheckbox = newTask.querySelector('.chk-input')
+    const newTaskEditDiv = newTask.querySelector('.task-edit')
+    const newTaskEditIcon = newTask.querySelector('#task-edit-icon')
+    const newTaskEditNameDiv = newTask.querySelector('.task-name-edit')
+    const newTaskEditNameInput = newTask.querySelector('.task-name-edit-input')
     const newText = newTask.querySelector('.task-text')
     const newDeleteForever = newTask.querySelector('.delete-forever')
 
+    newCheckbox.checked = task.completed
+
     placeEventOnTaskBlock(newTask)
-    placeEventOnCheckbox(newCheckbox)
-    placeEventOnTaskText(newText)
+
+    // OMG: refactor me please!!!
+    placeEventOnEditTaskName(newTaskEditDiv, newTaskEditIcon, newTaskEditNameDiv,
+        newTaskEditNameInput, newText, newCheckbox, task.id)
+    placeEventsOnCompleteTask(newText, newCheckbox, newTask, task.id)
     placeEventOnDeleteForever(newDeleteForever, task.id)
 }
 
@@ -118,33 +138,68 @@ function placeEventOnTaskBlock(task) {
     })
 }
 
-function placeEventOnCheckbox(chkInput) {
+function placeEventOnEditTaskName(taskEditIcon, newTaskEditIcon, editDiv,
+    input, newText, newCheckbox, taskId) {
 
-    chkInput.addEventListener('change', (event) => {
+    taskEditIcon.addEventListener('click', async () => {
 
-        const parent = chkInput.parentElement.parentElement
-        if (event.currentTarget.checked) {
-            parent.classList.add('completed')
+        const taskIndex = arrTasks
+            .indexOf(arrTasks.find(x => x.id === taskId))
+        
+        if (editDiv.style.display == 'block') {
+
+            newText.innerHTML = input.value
+            if (arrTasks[taskIndex].title != input.value) {
+                arrTasks[taskIndex].title = input.value
+                await updateTask(arrTasks[taskIndex])
+            }
+
+            newText.style.display = 'block'
+            newCheckbox.style.display = 'block'
+            editDiv.style.display = 'none'
+            newTaskEditIcon.innerHTML = 'edit'  
         } else {
-            parent.classList.remove('completed')
+            
+            input.value = arrTasks[taskIndex].title
+            newText.style.display = 'none'
+            newCheckbox.style.display = 'none'
+            editDiv.style.display = 'block'
+            newTaskEditIcon.innerHTML = 'done'      
         }
     })
 }
 
-function placeEventOnTaskText(textInput) {
+function placeEventsOnCompleteTask(textInput, chkInput, taskDiv, taskId) {
 
-    textInput.addEventListener('click', () => {
+    chkInput.addEventListener('change', async (event) => {
 
-        const parent = textInput.parentElement
-        var chkInput = parent.querySelector('.chk-input')
-        chkInput.checked = !chkInput.checked;
-
-        if (chkInput.checked) {
-            parent.classList.add('completed')
-        } else {
-            parent.classList.remove('completed')
-        }
+        const taskDiv = chkInput.parentElement.parentElement
+        await completeTask(taskDiv, event.currentTarget.checked, taskId)
     })
+
+    textInput.addEventListener('click', async () => {
+        var chkInput = taskDiv.querySelector('.chk-input')
+        await completeTask(taskDiv, !chkInput.checked, taskId)
+    })
+}
+
+async function completeTask(taskDiv, completed, taskId) {
+
+    var chkInput = taskDiv.querySelector('.chk-input')
+
+    if (completed) {
+        taskDiv.classList.add('completed')
+        chkInput.checked = true
+    } else {
+        taskDiv.classList.remove('completed')
+        chkInput.checked = false
+    }
+
+    const taskIndex = arrTasks
+        .indexOf(arrTasks.find(x => x.id === taskId))
+    
+    arrTasks[taskIndex].completed = completed
+    await updateTask(arrTasks[taskIndex])
 }
 
 function placeEventOnDeleteForever(input, taskId) {

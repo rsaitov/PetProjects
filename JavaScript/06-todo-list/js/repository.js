@@ -44,6 +44,14 @@ async function getTaskList(id) {
         ))[0]
 }
 
+async function updateTaskList(taskList) {
+
+    var taskListRef = await taskListsRef.doc(taskList.id)
+    await taskListRef.update({
+        title: taskList.title
+    })
+}
+
 async function getTasksOfTaskList(taskListId) {
 
     var querySnapshot = await tasksRef

@@ -129,6 +129,11 @@ footer .social a {
     color: #aaa;
 }
 
+.chk-input {
+    height: 16px;
+    width: 16px;
+}
+
 .check {
     margin-right: 4px;
 }
@@ -146,6 +151,23 @@ footer .social a {
     margin-right: 2px;
     color: #aaa;
     cursor: pointer;
+}
+
+#listNameEditIcon {
+    margin-top: 4px;
+}
+
+.listNameEdit {
+    display: none;
+    width: 90%;
+    margin-right: 10px;
+}
+
+.listNameEditInput {
+    font-size: 20px;
+    font-weight: bold;
+    height: 28px;
+    width: 100%;
 }
 
 .task-name-edit {

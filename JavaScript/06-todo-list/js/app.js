@@ -28,8 +28,31 @@ listName.addEventListener('mouseout', () => {
     listNameEditIcon.style.display = "none";
 })
 
-listNameEditIcon.addEventListener('click', () => {
-    console.log('edit')
+listNameEditIcon.addEventListener('click', async () => {
+    
+    const listNameEditDiv = document.querySelector('.listNameEdit')
+    const listNameEditInput = document.querySelector('.listNameEditInput')
+    console.log(listNameEditDiv);
+
+    if (listNameEditDiv.style.display == 'block') {
+        const newTaskListName = listNameEditInput.value
+        listNameEditInput.value = ''
+        taskListName.style.display = 'block'
+        listNameEditDiv.style.display = 'none'
+        listNameEditIcon.innerHTML = 'edit'
+
+        if (newTaskListName != currentTaskList.title) {
+            currentTaskList.title = newTaskListName
+            updateTaskListName()
+            await updateTaskList(currentTaskList)
+            console.log('task list updated');
+        }
+    } else {
+        listNameEditInput.value = currentTaskList.title
+        taskListName.style.display = 'none'
+        listNameEditDiv.style.display = 'block'
+        listNameEditIcon.innerHTML = 'done'
+    }
 })
 
 addButton.addEventListener('click', async () => {
@@ -68,9 +91,13 @@ async function loadTasksFromFirestore(taskListId) {
         generateTask(task, false)
     })
 
-    taskListName.innerHTML = `${currentTaskList.title} (${currentUser.login})`
+    updateTaskListName()
     placeEventsOnPlaceholders()
     setLoadingView(false)
+}
+
+function updateTaskListName() {
+    taskListName.innerHTML = `${currentTaskList.title} (${currentUser.login})`
 }
 
 function setLoadingView(isLoading) {
@@ -82,9 +109,10 @@ function setLoadingView(isLoading) {
 
 function generateTask(task, addToBegin = true) {
 
-    // const placeholderId = addToBegin ? 0 : 
-    const dragPlaceholderHtml = `<div class="placeholder" id=""></div>`
-
+    // const placeholderId = addToBegin ? 0 :
+    // const dragPlaceholderHtml = `<div class="placeholder" id=""></div>`
+    const dragPlaceholderHtml = ''
+    
     taskList.insertAdjacentHTML(
         addToBegin ? 'afterbegin' : 'beforeend',
         `${addToBegin ? dragPlaceholderHtml : ''}

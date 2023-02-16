@@ -23,7 +23,7 @@ class Task {
         taskListId,
         creationTime,
         completionTime,
-        // orderNumber,
+        orderNumber,
     ) {
         this.id = id
         this.title = title
@@ -31,6 +31,6 @@ class Task {
         this.taskListId = taskListId
         this.creationTime = creationTime
         this.completionTime = completionTime
-        // this.orderNumber = orderNumber
+        this.orderNumber = orderNumber
     }
 }

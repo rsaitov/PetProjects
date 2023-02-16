@@ -20,7 +20,7 @@ async function getUsers() {
 }
 
 async function getUser(id) {
-    var querySnapshot = await usersRef.where("__name__", "==", id).get()    
+    var querySnapshot = await usersRef.where("__name__", "==", id).get()
     return querySnapshot.docs
         .map(x => new User(
             x.id,
@@ -49,7 +49,7 @@ async function getTasksOfTaskList(taskListId) {
     var querySnapshot = await tasksRef
         .where("taskListId", "==", taskListId)
         .get()
-    
+
     return querySnapshot.docs
         .map(x => new Task(
             x.id,
@@ -59,7 +59,12 @@ async function getTasksOfTaskList(taskListId) {
             x.data().creationTime,
             x.data().completionTime,
         ))
-    .sort((a, b) => b.creationTime - a.creationTime)
+        .sort((a, b) => {
+            return a.completed - b.completed 
+                || a.orderNumber - b.orderNumber
+                || b.completionTime - a.completionTime
+                || b.creationTime - a.creationTime
+        })
 }
 
 async function addTask(task) {
@@ -70,7 +75,7 @@ async function addTask(task) {
         completed: task.completed,
         creationTime: new Date(),
         completionTime: null
-      });
+    });
 }
 
 async function updateTask(task) {
@@ -78,7 +83,9 @@ async function updateTask(task) {
     var taskRef = await tasksRef.doc(task.id)
     await taskRef.update({
         title: task.title,
-        completed: task.completed
+        completed: task.completed,
+        completionTime: task.completionTime ?? null,
+        orderNumber: task.orderNumber ?? null,
     })
 }
 

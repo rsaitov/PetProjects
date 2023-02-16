@@ -245,6 +245,8 @@ async function completeTask(taskDiv, completed, taskId) {
         .indexOf(arrTasks.find(x => x.id === taskId))
 
     arrTasks[taskIndex].completed = completed
+    arrTasks[taskIndex].completionTime = completed
+        ? new Date() : null;
     await updateTask(arrTasks[taskIndex])
 }
 

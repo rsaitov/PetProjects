@@ -64,7 +64,7 @@ footer .social a {
     display: none;
 }
 
-.newtask{
+.newtask {
     display: none;
     padding-bottom: 12px;
     border-bottom: 1px solid #ddd;
@@ -159,4 +159,21 @@ footer .social a {
     margin-right: 5px;
     background-color: red;
     cursor: pointer;
+}
+
+.hold {
+    border: 1px dashed #444;
+}
+
+.hide {
+    display: none;
+}
+
+.placeholder {
+    height: 8px;
+    box-sizing: border-box;
+}
+
+.hovered {
+    border: 2px dashed red;
 }

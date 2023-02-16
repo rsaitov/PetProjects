@@ -10,6 +10,8 @@ const taskList = document.querySelector('.tasklist')
 const newTaskText = document.querySelector('#newtasktext')
 const addButton = document.querySelector('#addBtn')
 
+let draggableElement
+
 let currentUserId = 'iTQtInegvrfZJ6ba4AvG'
 let currentTaskListId = 'STbCaMfARbICbnNyJVqD'
 
@@ -31,7 +33,7 @@ listNameEditIcon.addEventListener('click', () => {
 })
 
 addButton.addEventListener('click', async () => {
-    
+
     if (newTaskText.value.trim() === '') {
         return
     }
@@ -67,6 +69,7 @@ async function loadTasksFromFirestore(taskListId) {
     })
 
     taskListName.innerHTML = `${currentTaskList.title} (${currentUser.login})`
+    placeEventsOnPlaceholders()
     setLoadingView(false)
 }
 
@@ -79,9 +82,13 @@ function setLoadingView(isLoading) {
 
 function generateTask(task, addToBegin = true) {
 
+    // const placeholderId = addToBegin ? 0 : 
+    const dragPlaceholderHtml = `<div class="placeholder" id=""></div>`
+
     taskList.insertAdjacentHTML(
         addToBegin ? 'afterbegin' : 'beforeend',
-        `<div class="task${task.completed ? ' completed' : ''}">
+        `${addToBegin ? dragPlaceholderHtml : ''}
+        <div draggable="true" class="task${task.completed ? ' completed' : ''}">
             <input type="hidden" id="id" value="${task.id}">
             <div class="drag">
                 <span class="material-icons md-20">drag_indicator</span>
@@ -103,7 +110,9 @@ function generateTask(task, addToBegin = true) {
             <div class="delete-forever">
                 <span class="material-icons md-20">delete_forever</span>
             </div>        
-        </div>`);
+        </div>
+        ${!addToBegin ? dragPlaceholderHtml : ''}`
+    );
 
     const taskNodes = taskList.querySelectorAll('.task');
 
@@ -136,6 +145,19 @@ function placeEventOnTaskBlock(task) {
     task.addEventListener('mouseout', () => {
         task.querySelector('.delete-forever').style.display = 'none'
     })
+
+    task.addEventListener('dragstart', () => {
+        task.classList.add('hold')
+        draggableElement = task
+        //setTimeout(() => task.classList.add('hide'))
+    })
+
+    task.addEventListener('dragend', () => {
+        task.classList.remove('hold')
+        task.classList.remove('hide')
+
+        draggableElement = undefined
+    })
 }
 
 function placeEventOnEditTaskName(taskEditIcon, newTaskEditIcon, editDiv,
@@ -145,7 +167,7 @@ function placeEventOnEditTaskName(taskEditIcon, newTaskEditIcon, editDiv,
 
         const taskIndex = arrTasks
             .indexOf(arrTasks.find(x => x.id === taskId))
-        
+
         if (editDiv.style.display == 'block') {
 
             newText.innerHTML = input.value
@@ -157,14 +179,14 @@ function placeEventOnEditTaskName(taskEditIcon, newTaskEditIcon, editDiv,
             newText.style.display = 'block'
             newCheckbox.style.display = 'block'
             editDiv.style.display = 'none'
-            newTaskEditIcon.innerHTML = 'edit'  
+            newTaskEditIcon.innerHTML = 'edit'
         } else {
-            
+
             input.value = arrTasks[taskIndex].title
             newText.style.display = 'none'
             newCheckbox.style.display = 'none'
             editDiv.style.display = 'block'
-            newTaskEditIcon.innerHTML = 'done'      
+            newTaskEditIcon.innerHTML = 'done'
         }
     })
 }
@@ -183,6 +205,30 @@ function placeEventsOnCompleteTask(textInput, chkInput, taskDiv, taskId) {
     })
 }
 
+function placeEventsOnPlaceholders() {
+    const placeholders = document.querySelectorAll('.placeholder')
+
+    for (const placeholder of placeholders) {
+
+        placeholder.addEventListener('dragover', (event) => {
+            event.preventDefault()
+        })
+
+        placeholder.addEventListener('dragenter', (event) => {
+            placeholder.classList.add('hovered')
+        })
+
+        placeholder.addEventListener('dragleave', (event) => {
+            placeholder.classList.remove('hovered')
+        })
+
+        placeholder.addEventListener('drop', (event) => {
+            placeholder.classList.remove('hovered')
+            placeholder.append(draggableElement)
+        })
+    }
+}
+
 async function completeTask(taskDiv, completed, taskId) {
 
     var chkInput = taskDiv.querySelector('.chk-input')
@@ -197,7 +243,7 @@ async function completeTask(taskDiv, completed, taskId) {
 
     const taskIndex = arrTasks
         .indexOf(arrTasks.find(x => x.id === taskId))
-    
+
     arrTasks[taskIndex].completed = completed
     await updateTask(arrTasks[taskIndex])
 }

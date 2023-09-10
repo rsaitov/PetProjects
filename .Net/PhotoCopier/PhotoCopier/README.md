@@ -9,7 +9,7 @@ This utility allows to move files to folders automatically, according to their d
 
 I just need to execute utility on my upload folder for files. Some files will be moved to separate folders, which mean some event. I need only to append name of that event to folder name. Other files will be located to common file folder with division by months.
 
-Now structuring my files gain several minutes instead of hours.
+Now structuring my files takes only some minutes instead of hours.
 
 Further enhancements:
 
